@@ -1,0 +1,261 @@
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6rem;
+  min-height: 100vh;
+  background-color: aliceblue !important;
+  position: relative;
+}
+.home{
+  background-color: black;
+}
+.todo__p{
+  color: white;
+}
+.login__block{
+  border: 1px solid #ccc;
+  padding: 20px 80px;
+  background-color: white;
+  border-radius: 16px;
+}
+.todo__bg{
+  min-height: 100vh;
+  background-color: #fff;
+}
+.dashboard__block{
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: #fff;
+}
+.dashboard__button__show{
+  margin-bottom: 20px;
+}
+.dashboard__color__text{
+  margin-top: 10px;
+  color: black;
+}
+.dashboard__button{
+  margin-top: 30px;
+ float: right;
+}
+.home__avatar{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home__username{
+  margin: 0px 12px;
+}
+.loading{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #ccc;
+  opacity: 0.6;
+  z-index: 100;
+}
+.form{
+  justify-content: center;
+  margin-top: 20px;
+}
+.title__todo{
+  text-align: end;
+  padding: 10px 20px 0px 0px;
+}
+.input{
+  justify-content: center;
+  width: 300px;
+}
+.dashboard__p{
+  text-align: center;
+}
+.dashboard__input__search{
+  margin-right: 10px;
+}
+.dashboard__pagina{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+.dashboard__flex__center{
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.dashboard__flex{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.dashboard{
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.title__signup{
+  text-align: center;
+  color: black;
+}
+.header__input{
+  padding: 8px 16px;
+  border-radius: 10px;
+}
+.test_input{
+  display: flex;
+  width: 300px;
+}
+.header__todo{
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.p{
+  text-align: end;
+  text-decoration:  underline 1px solid gray;
+  font-size: 12px;
+}
+.test__div{
+  width: 400px;
+  margin: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.todo__btn__change{
+  background-color: yellow;
+  border: 1px solid black;
+}
+
+/* Enable hover only on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    background: rgba(var(--card-rgb), 0.1);
+    border: 1px solid rgba(var(--card-border-rgb), 0.15);
+  }
+
+  .card:hover span {
+    transform: translateX(4px);
+  }
+}
+
+@media (prefers-reduced-motion) {
+  .thirteen::before {
+    animation: none;
+  }
+
+  .card:hover span {
+    transform: none;
+  }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .content {
+    padding: 4rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    margin-bottom: 120px;
+    max-width: 320px;
+    text-align: center;
+  }
+
+  .card {
+    padding: 1rem 2.5rem;
+  }
+
+  .card h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  .center {
+    padding: 8rem 0 6rem;
+  }
+
+  .center::before {
+    transform: none;
+    height: 300px;
+  }
+
+  .description {
+    font-size: 0.8rem;
+  }
+
+  .description a {
+    padding: 1rem;
+  }
+
+  .description p,
+  .description div {
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    width: 100%;
+  }
+
+  .description p {
+    align-items: center;
+    inset: 0 0 auto;
+    padding: 2rem 1rem 1.4rem;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid rgba(var(--callout-border-rgb), 0.25);
+    background: linear-gradient(
+      to bottom,
+      rgba(var(--background-start-rgb), 1),
+      rgba(var(--callout-rgb), 0.5)
+    );
+    background-clip: padding-box;
+    backdrop-filter: blur(24px);
+  }
+
+  .description div {
+    align-items: flex-end;
+    pointer-events: none;
+    inset: auto 0 0;
+    padding: 2rem;
+    height: 200px;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgb(var(--background-end-rgb)) 40%
+    );
+    z-index: 1;
+  }
+}
+
+/* Tablet and Smaller Desktop */
+@media (min-width: 701px) and (max-width: 1120px) {
+  .grid {
+    grid-template-columns: repeat(2, 50%);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .vercelLogo {
+    filter: invert(1);
+  }
+
+  .logo,
+  .thirteen img {
+    filter: invert(1) drop-shadow(0 0 0.3rem #ffffff70);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
