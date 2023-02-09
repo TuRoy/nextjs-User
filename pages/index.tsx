@@ -5,6 +5,8 @@ import { Button, Avatar } from 'antd';
 import { Layout, Space } from 'antd';
 import Link from 'next/link';
 import Cookies from 'js-cookie'
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 
 const { Header, Footer, Sider, Content } = Layout;
@@ -12,6 +14,15 @@ const { Header, Footer, Sider, Content } = Layout;
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+
+const router = useRouter()
+  useEffect(()=>{
+    const username = Cookies.get('todo-username')
+  
+    if(username){
+        router.push('/dashboard')
+    }
+  }, [])
 
 
   const headerStyle: React.CSSProperties = {

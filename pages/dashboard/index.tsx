@@ -48,7 +48,8 @@ export default function Dashboard(props: any) {
       if(rolequery || namequery){
         dispatch(filterRequest({search: namequery, role: rolequery , page: pagequery? pagequery: 1, pagesize: 5}))
       }else{
-        dispatch(getalltodoRequest({page: pagani, pagesize: 5}))
+        console.log(pagina)
+        dispatch(getalltodoRequest({page: pagequery, pagesize: 5}))
       }
     }
   }, [router])
@@ -78,7 +79,7 @@ export default function Dashboard(props: any) {
 
   const [dataCreate, setDataCreate] = useState({ username: '', address: '', birthday: '', role: '', id: '' })
   // const [dataChange, setDataChange] = useState({ username: '', address: '', birthday: '', role: '' })
-const [pagani, setPagani] = useState(1)
+const [pagina, setPagina] = useState(1)
 
 
   const handleDelete = (ID: any) => {
@@ -242,8 +243,8 @@ const [pagani, setPagani] = useState(1)
   }
 
 
-  const handlChangePagani =(page:any, pageSize:any)=>{
-    setPagani(page)
+  const handlChangePagina =(page:any, pageSize:any)=>{
+    setPagina(page)
     router.push({
       pathname: '/dashboard',
       query: { search: nameSearch, role: rolequery? rolequery : '', page: page, pagesize:5}
@@ -264,7 +265,7 @@ const [pagani, setPagani] = useState(1)
             Create new user
           </Button>
           <Select
-            defaultValue="All"
+            defaultValue={'All'}
             style={{ width: 120 }}
             onChange={handleChangeRole}
             options={[
@@ -327,7 +328,7 @@ const [pagani, setPagani] = useState(1)
 
       <Table columns={columns} dataSource={data} bordered pagination={false} />
 
-     <div className={styles.dashboard__pagina}> <Pagination onChange={handlChangePagani} defaultCurrent={ 1} total={size*2} />;</div>
+     <div className={styles.dashboard__pagina}> <Pagination onChange={handlChangePagina} defaultCurrent={ 1} total={size*2} />;</div>
     </div>
   );
 }
