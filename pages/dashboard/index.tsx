@@ -265,7 +265,7 @@ const [pagina, setPagina] = useState(1)
             Create new user
           </Button>
           <Select
-            defaultValue={'All'}
+            defaultValue={'Role'}
             style={{ width: 120 }}
             onChange={handleChangeRole}
             options={[
