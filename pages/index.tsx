@@ -17,9 +17,9 @@ export default function Home() {
 
 const router = useRouter()
   useEffect(()=>{
-    const username = Cookies.get('todo-username')
+    const token = Cookies.get('cookie-todo')
   
-    if(username){
+    if(token){
         router.push('/dashboard')
     }
   }, [])

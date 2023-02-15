@@ -1,5 +1,5 @@
 import { deleteRequest, getalltodoRequest, addlistRequest, changeRequest, filterRequest } from '@/saga/action';
-import { Button, Input, Modal, Table, Drawer, DatePicker, Radio, Select, Tooltip, notification, Pagination } from 'antd';
+import { Button, Input, Modal, Table, Drawer, DatePicker, Radio, Select, Tooltip, Spin, Pagination } from 'antd';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from '@/styles/Home.module.css'
@@ -274,10 +274,12 @@ export default function Dashboard(props: any) {
     //   dispatch(getalltodoRequest({page: page, pagesize: 5}))
     // }
   }
+  const loading = useSelector((state:any)=> state.loading) 
 
   const dateFormat = 'YYYY/MM/DD';
   return (
     <div className={styles.dashboard__block}>
+       {loading ? <div className={styles.loading}><Spin size="large" /></div> : ''}
       <div className={styles.dashboard__flex}>
         <div >
           <Button type="primary" ghost className={styles.dashboard__button__show} onClick={showDrawer}>
@@ -347,7 +349,7 @@ export default function Dashboard(props: any) {
 
       <Table columns={columns} dataSource={data} bordered pagination={false} />
 
-      <div className={styles.dashboard__pagina}> <Pagination onChange={handlChangePagina} defaultCurrent={1} total={size * 3} />;</div>
+      <div className={styles.dashboard__pagina}> <Pagination onChange={handlChangePagina} defaultCurrent={1} total={50} />;</div>
     </div>
   );
 }
