@@ -1,5 +1,5 @@
 import { deleteRequest, getalltodoRequest, addlistRequest, changeRequest, filterRequest } from '@/saga/action';
-import { Button, Input, Modal, Table, Drawer, DatePicker, Radio, Select, Tooltip, notification, Pagination  } from 'antd';
+import { Button, Input, Modal, Table, Drawer, DatePicker, Radio, Select, Tooltip, notification, Pagination } from 'antd';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from '@/styles/Home.module.css'
@@ -41,16 +41,33 @@ export default function Dashboard(props: any) {
   let size = useSelector((state: any) => state.size)
 
   React.useEffect(() => {
-    const username = Cookies.get('todo-username')
-    if (!username) {
+    const token = Cookies.get('cookie-todo')
+    if (!token) {
       router.push('/')
-    } else{
-      if(rolequery || namequery){
-        dispatch(filterRequest({search: namequery, role: rolequery , page: pagequery? pagequery: 1, pagesize: 5}))
-      }else{
-        console.log(pagina)
-        dispatch(getalltodoRequest({page: pagequery, pagesize: 5}))
+    } else {
+      
+
+      if (rolequery && namequery) {
+        dispatch(filterRequest({ search: namequery, role: rolequery, page: pagequery ? pagequery : 1, pagesize: 5 }))
       }
+
+      if (rolequery) {
+        if (rolequery == "All") {
+          dispatch(getalltodoRequest({ page: pagequery, pagesize: 5 }))
+        }else{
+          dispatch(filterRequest({ page: pagequery ? pagequery : 1, pagesize: 5, role: rolequery }))
+        }
+      }
+
+      if (namequery) {
+        console.log(123123123123);
+          dispatch(filterRequest({ page: pagequery ? pagequery : 1, pagesize: 5, search: namequery }))
+      }
+
+      if (!rolequery && !namequery) {
+        dispatch(getalltodoRequest({ page: pagequery, pagesize: 5 }))
+      }
+
     }
   }, [router])
 
@@ -79,21 +96,22 @@ export default function Dashboard(props: any) {
 
   const [dataCreate, setDataCreate] = useState({ username: '', address: '', birthday: '', role: '', id: '' })
   // const [dataChange, setDataChange] = useState({ username: '', address: '', birthday: '', role: '' })
-const [pagina, setPagina] = useState(1)
+  const [pagina, setPagina] = useState(1)
 
 
   const handleDelete = (ID: any) => {
+    console.log(ID);
     dispatch(deleteRequest({ _ID: ID }))
   }
 
   const handleOpenChange = (ID: any) => {
-    let newdata = data.find((val: any) => val._id == ID)
+    let newdata = data.find((val: any) => val.id == ID)
     setDataCreate({
       username: newdata.username,
       address: newdata.address,
       birthday: newdata.birthday,
       role: newdata.role,
-      id: newdata._id,
+      id: newdata.id,
     })
     showModal(ID)
   }
@@ -155,6 +173,7 @@ const [pagina, setPagina] = useState(1)
       title: 'Birthday',
       dataIndex: 'birthday',
       key: 'birthday',
+      render: (text) => <a>{(new Date(text)).toLocaleDateString()}</a>,
     },
     {
       title: 'Role',
@@ -168,10 +187,10 @@ const [pagina, setPagina] = useState(1)
     },
     {
       title: 'Edit',
-      dataIndex: '_id',
-      key: '_id',
+      dataIndex: 'id',
+      key: 'id',
       render: (text) => <div className={styles.dashboard__flex__center}>
-        <Button  className={styles.dashboard__input__search} onClick={() => { handleOpenChange(text) }} type="primary" ghost>Change</Button>
+        <Button className={styles.dashboard__input__search} onClick={() => { handleOpenChange(text) }} type="primary" ghost>Change</Button>
         <Button onClick={() => { handleDelete(text) }} danger>delete</Button>
       </div>,
     },
@@ -223,31 +242,31 @@ const [pagina, setPagina] = useState(1)
   const handleChangeRole = (value: string) => {
     router.push({
       pathname: '/dashboard',
-      query: { search: nameSearch?nameSearch:'',  role: value, page: 1, pagesize:5 }
+      query: { search: nameSearch ? nameSearch : '', role: value, page: 1, pagesize: 5 }
     })
     console.log(`selected ${value}`);
   };
   const [nameSearch, setNameSearch] = useState('')
 
-  const  handleChangeSearch = (e:any)=>{
+  const handleChangeSearch = (e: any) => {
     setNameSearch(e.target.value)
   }
 
-  const handleSearch = ()=>{
+  const handleSearch = () => {
     console.log(nameSearch.length)
-      router.push({
-        pathname: '/dashboard',
-        query: { search: nameSearch, role: rolequery? rolequery : '', page: 1, pagesize:5}
-      })
-    
+    router.push({
+      pathname: '/dashboard',
+      query: { search: nameSearch, role: rolequery ? rolequery : '', page: 1, pagesize: 5 }
+    })
+
   }
 
 
-  const handlChangePagina =(page:any, pageSize:any)=>{
+  const handlChangePagina = (page: any, pageSize: any) => {
     setPagina(page)
     router.push({
       pathname: '/dashboard',
-      query: { search: nameSearch, role: rolequery? rolequery : '', page: page, pagesize:5}
+      query: { search: nameSearch, role: rolequery ? rolequery : '', page: page, pagesize: 5 }
     })
     // if(rolequery || namequery){
     //   dispatch(filterRequest({search: namequery, role: rolequery}))
@@ -276,7 +295,7 @@ const [pagina, setPagina] = useState(1)
           />
         </div>
         <div className={styles.dashboard__flex}>
-          <Input onChange={handleChangeSearch}  className={styles.dashboard__input__search} type='text' placeholder='Name'></Input>
+          <Input onChange={handleChangeSearch} className={styles.dashboard__input__search} type='text' placeholder='Name'></Input>
 
           <Tooltip title="search">
             <Button onClick={handleSearch} type="dashed" shape="circle" icon={<SearchOutlined />} />
@@ -287,13 +306,13 @@ const [pagina, setPagina] = useState(1)
 
       <Drawer title="Basic Drawer" placement="right" onClose={onClose} open={open}>
         <p className={styles.dashboard__color__text}>Username:</p>
-        <Input   onChange={onchangeUsername} placeholder='UserName' type='text'></Input>
+        <Input onChange={onchangeUsername} placeholder='UserName' type='text'></Input>
 
         <p className={styles.dashboard__color__text}> Address: </p>
-        <Input  onChange={onchangeAddress} placeholder='Address' type='text'></Input>
+        <Input onChange={onchangeAddress} placeholder='Address' type='text'></Input>
 
         <p className={styles.dashboard__color__text}> Birthday: </p>
-        <DatePicker  onChange={onChangeDate} />
+        <DatePicker onChange={onChangeDate} />
 
         <div className={styles.dashboard__color__text} >
           <Radio.Group onChange={onChangeRole} value={value}>
@@ -315,7 +334,7 @@ const [pagina, setPagina] = useState(1)
           <Input value={dataCreate.address} onChange={onchangeAddress} placeholder='Address' type='text'></Input>
 
           <p className={styles.dashboard__color__text}> Birthday: </p>
-          <DatePicker onChange={onChangeDate}  defaultValue={dayjs(`${dataCreate.birthday}`, dateFormat)} />
+          <DatePicker onChange={onChangeDate} defaultValue={dayjs(`${dataCreate.birthday}`, dateFormat)} />
 
           <div className={styles.dashboard__color__text} >
             <Radio.Group onChange={onChangeRole} value={dataCreate.role} >
@@ -328,7 +347,7 @@ const [pagina, setPagina] = useState(1)
 
       <Table columns={columns} dataSource={data} bordered pagination={false} />
 
-     <div className={styles.dashboard__pagina}> <Pagination onChange={handlChangePagina} defaultCurrent={ 1} total={size*2} />;</div>
+      <div className={styles.dashboard__pagina}> <Pagination onChange={handlChangePagina} defaultCurrent={1} total={size * 3} />;</div>
     </div>
   );
 }

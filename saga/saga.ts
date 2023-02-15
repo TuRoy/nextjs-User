@@ -7,18 +7,19 @@ import { actionTypes, getalltodoRequest, setLoading, setSizeData, todolistData, 
 
 
 const getalltodoApi = async (data: any) => {
-    return await axios.get(`http://localhost:4000/api/todo/getalltodo?page=${data.page}&pagesize=${data.pagesize}`)
+    return await axios.get(`http://localhost:4000/list-users?filter={"limit": ${data.pagesize}, "skip": ${(data.pages - 1) * data.pagesize}}`)
 }
 
 
 
 function* getalltodoSaga({ payload }: any): any {
-    const { page, pagesize} = payload
-    const res = yield call(getalltodoApi, {page, pagesize})
-    if (res.data.data) {
-        console.log(22, res.data)
-        yield put(todolistData(res.data.data))
-        yield put(setSizeData(res.data.size))
+    const { page, pagesizes } = payload
+    let pages = page ? page : 1
+    let pagesize = pagesizes ? pagesizes : 5
+    const res = yield call(getalltodoApi, { pages, pagesize })
+    if (res.data) {
+        yield put(todolistData(res.data))
+        yield put(setSizeData(res.data.length * pages))
         // notification.open({
         //     message: res.data.status,
         // });
@@ -29,42 +30,69 @@ function* getalltodoSaga({ payload }: any): any {
     }
 }
 const findApi = async (data: any) => {
-    return await axios.get(`http://localhost:4000/api/todo/find?search=${data.search}&role=${data.role}&page=${data.page}&pagesize=${data.pagesize}`)
+   
+    if (data.search) {
+        console.log(11111);
+        return await axios.get(` http://localhost:4000/list-users?filter={
+             "limit":  ${data.pagesize},
+              "skip":${(data.pages - 1) * data.pagesize} ,
+               "where": {
+                 "username": {"like": "${data.search}"} } 
+                }`)
+    }
+    if (data.role) { return await axios.get(`http://localhost:4000/list-users?filter={"limit":  ${data.pagesize}, "skip":${(data.pages - 1) * data.pagesize} ,"where": {"role": "${data.role}"}}`) }
+    if (data.search && data.role) {
+        return await axios.get(` http://localhost:4000/list-users?filter={
+            "limit":  ${data.pagesize}, 
+            "skip":${(data.pages - 1) * data.pagesize}, 
+            "where": {
+                "role" : "${data.role}",
+                "username": {"like": "${data.search}"}
+                }
+            }`)
+    }
+    if(!data.role && !data.search){
+        return await axios.get(` http://localhost:4000/list-users?filter={ "limit":  ${data.pagesize}, "skip":${(data.pages - 1) * data.pagesize}`)
+
+    }
 }
 
 
 function* findSaga({ payload }: any): any {
-    const { search, role, page, pagesize } = payload
-    const res = yield call(findApi, { search, role , page, pagesize})
-    if(res.data.data){
-        console.log(res.data.size);
-        yield put(setSizeData(res.data.size))
-        yield put(todolistData(res.data.data))
+    const { search, role, page, pagesizes } = payload
+    let pages = page ? page * 1 : 1
+    let pagesize = pagesizes ? pagesizes : 5
+    const res = yield call(findApi, { search, role, pages, pagesize })
+    console.log(res);
+    if (res.data) {
+        yield put(setSizeData(res.data.length  * pages))
+        yield put(todolistData(res.data))
     }
 
 }
 
 const postApiLogin = async (data: any) => {
-    return await axios.post('http://localhost:4000/api/user/signin', data)
+    return await axios.post('http://localhost:4000/users/login', data)
 }
 
 const postApiRegister = async (data: any) => {
-    return await axios.post('http://localhost:4000/api/user/signup', data)
+    return await axios.post('http://localhost:4000/signup', data)
 }
 
 function* loginSaga({ payload }: any): any {
     const { email, password, callback } = payload
     yield put(setLoading(true))
     const res = yield call(postApiLogin, { email, password })
-    if (res.data.token) {
+    console.log(69, res);
+    if (res) {
         yield put(setLoading(false))
         Cookies.set('cookie-todo', res.data.token, { expires: new Date(Date.now() + 120000) })
-        Cookies.set('todo-username', res.data.data.username, { expires: new Date(Date.now() + 120000) })
-        Cookies.set('todo-role', res.data.data.role, { expires: new Date(Date.now() + 120000) })
+        // Cookies.set('todo-username', res.data.data.username, { expires: new Date(Date.now() + 120000) })
+        // Cookies.set('todo-role', res.data.data.role, { expires: new Date(Date.now() + 120000) })
         notification.open({
             message: res.data.status,
         });
-        yield call(callback, res.data.data._id)
+        yield call(callback)
     } else {
         yield put(setLoading(false))
         notification.open({
@@ -77,7 +105,8 @@ function* registerSaga({ payload }: any): any {
     const { email, password, username, callback } = payload
     yield put(setLoading(true))
     const res = yield call(postApiRegister, { email, password, username })
-    if (res.data.data) {
+    console.log(80, res);
+    if (res) {
         yield put(setLoading(false))
         yield call(callback())
         notification.open({
@@ -110,15 +139,15 @@ function* todolistSaga({ payload }: any): any {
 }
 
 const deleteApi = async (data: any) => {
-    return await axios.delete(`http://localhost:4000/api/todo/delete/${data.id}`,)
+    return await axios.delete(`http://localhost:4000/list-users/${data.id}`,)
 }
+
 
 function* deleteSaga({ payload }: any): any {
     yield put(setLoading(true))
-    const { _ID, IDuser } = payload
+    const { _ID } = payload
     const res = yield call(deleteApi, { id: _ID })
-    if (res.data.status == "delete success") {
-        yield put(todolistRequest({ IDuser }))
+    if (res) {
         yield put(getalltodoRequest(false))
         yield put(setLoading(false))
         notification.open({
@@ -148,16 +177,20 @@ function* FindRoleSaga({ payload }: any): any {
 }
 
 const addApi = async (data: any) => {
-    return await axios.post('http://localhost:4000/api/todo/create', data)
+    console.log(data);
+    return await axios.post('http://localhost:4000/list-users', data)
 }
 const putApi = async (data: any) => {
-    return await axios.put('http://localhost:4000/api/todo/update', data)
+    console.log(160, data);
+    // http://localhost:4000/list-users/3
+    // http://localhost:4000/api/todo/update
+    return await axios.put(` http://localhost:4000/list-users/${data.id}`, data)
 }
 
 function* changeSaga({ payload }: any): any {
     const { id, username, role, address, birthday } = payload
     const res = yield call(putApi, { id: id, username, role, birthday, address })
-    console.log(144, res);
+    // console.log(168, res);
     if (res) {
         yield put(getalltodoRequest(true))
         notification.open({
@@ -169,10 +202,10 @@ function* changeSaga({ payload }: any): any {
 
 
 function* addSaga({ payload }: any): any {
-    const { username, birthday, role, address, IDuser } = payload
+    const { username, birthday, role, address } = payload
     yield put(setLoading(true))
-    const res = yield call(addApi, { username, birthday, role, address, IDuser })
-    if (res.data.data) {
+    const res = yield call(addApi, { username, birthday, role, address })
+    if (res) {
         notification.open({
             message: res.data.status,
         });
