@@ -1,4 +1,4 @@
-import { deleteRequest, getalltodoRequest, addlistRequest, changeRequest, filterRequest } from '@/saga/action';
+import { deleteRequest, getalltodoRequest, addlistRequest, changeRequest, filterRequest, companyRequest } from '@/saga/action';
 import { Button, Input, Modal, Table, Drawer, DatePicker, Radio, Select, Tooltip, Spin, Pagination } from 'antd';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,7 +11,7 @@ import type { DatePickerProps } from 'antd';
 import type { RadioChangeEvent } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-
+import TableCompnent from '@/components/table/table';
 
 
 
@@ -31,13 +31,8 @@ export default function Dashboard(props: any) {
 
 
 
-  // if (rolequery && rolequery !== "All") {
-  //   data = data.filter((val: any) => val.role == rolequery)
-  // }
-  // if(namequery){
-  //   data = data.filter((val: any) => val.username.includes(namequery) )
-  // }
   let data = useSelector((state: any) => state.todoList)
+  let companyData = useSelector((state: any) => state.company)
   let size = useSelector((state: any) => state.size)
 
   React.useEffect(() => {
@@ -45,7 +40,8 @@ export default function Dashboard(props: any) {
     if (!token) {
       router.push('/')
     } else {
-      
+      dispatch(companyRequest(true))
+
 
       if (rolequery && namequery) {
         dispatch(filterRequest({ search: namequery, role: rolequery, page: pagequery ? pagequery : 1, pagesize: 5 }))
@@ -54,14 +50,13 @@ export default function Dashboard(props: any) {
       if (rolequery) {
         if (rolequery == "All") {
           dispatch(getalltodoRequest({ page: pagequery, pagesize: 5 }))
-        }else{
+        } else {
           dispatch(filterRequest({ page: pagequery ? pagequery : 1, pagesize: 5, role: rolequery }))
         }
       }
 
       if (namequery) {
-        console.log(123123123123);
-          dispatch(filterRequest({ page: pagequery ? pagequery : 1, pagesize: 5, search: namequery }))
+        dispatch(filterRequest({ page: pagequery ? pagequery : 1, pagesize: 5, search: namequery }))
       }
 
       if (!rolequery && !namequery) {
@@ -81,9 +76,8 @@ export default function Dashboard(props: any) {
   };
 
   const handleOk = () => {
-    console.log(dataCreate)
     dispatch(changeRequest(dataCreate))
-
+    // dispatch(companyRequest(true))
     setIsModalOpen(false);
   };
 
@@ -94,24 +88,28 @@ export default function Dashboard(props: any) {
 
   // ***************************************************
 
-  const [dataCreate, setDataCreate] = useState({ username: '', address: '', birthday: '', role: '', id: '' })
-  // const [dataChange, setDataChange] = useState({ username: '', address: '', birthday: '', role: '' })
+  const [dataCreate, setDataCreate] = useState({ username: '', address: '', birthday: '', role: '', id: '', company: '' })
   const [pagina, setPagina] = useState(1)
 
 
   const handleDelete = (ID: any) => {
-    console.log(ID);
     dispatch(deleteRequest({ _ID: ID }))
+    dispatch(companyRequest(true))
   }
 
   const handleOpenChange = (ID: any) => {
+    console.log(109, ID);
     let newdata = data.find((val: any) => val.id == ID)
+    console.log(111, data);
+
     setDataCreate({
       username: newdata.username,
       address: newdata.address,
       birthday: newdata.birthday,
       role: newdata.role,
       id: newdata.id,
+      company: newdata.companyId
+
     })
     showModal(ID)
   }
@@ -119,8 +117,8 @@ export default function Dashboard(props: any) {
 
   const handleCreate = () => {
     dispatch(addlistRequest(dataCreate))
+    dispatch(companyRequest(true))
     setOpen(false);
-    console.log(dataCreate)
   }
 
   const onchangeUsername = (e: any) => {
@@ -129,7 +127,9 @@ export default function Dashboard(props: any) {
       address: dataCreate.address,
       birthday: dataCreate.birthday,
       role: dataCreate.role,
-      id: dataCreate.id
+      id: dataCreate.id,
+      company: dataCreate.company
+
     })
   }
 
@@ -139,7 +139,9 @@ export default function Dashboard(props: any) {
       address: e.target.value,
       birthday: dataCreate.birthday,
       role: dataCreate.role,
-      id: dataCreate.id
+      id: dataCreate.id,
+      company: dataCreate.company
+
     })
   }
 
@@ -175,15 +177,23 @@ export default function Dashboard(props: any) {
       key: 'birthday',
       render: (text) => <a>{(new Date(text)).toLocaleDateString()}</a>,
     },
+
+    {
+      title: 'Address',
+      dataIndex: 'address',
+      key: 'address',
+    },
     {
       title: 'Role',
       dataIndex: 'role',
       key: 'role',
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      title: 'Company',
+      dataIndex: 'company',
+      key: 'company',
+      render: (text) => <a>{text?.name}</a>,
+
     },
     {
       title: 'Edit',
@@ -218,7 +228,9 @@ export default function Dashboard(props: any) {
       address: dataCreate.address,
       birthday: dateString,
       role: dataCreate.role,
-      id: dataCreate.id
+      id: dataCreate.id,
+      company: dataCreate.company
+
     })
   };
 
@@ -233,7 +245,20 @@ export default function Dashboard(props: any) {
       address: dataCreate.address,
       birthday: dataCreate.birthday,
       role: e.target.value,
-      id: dataCreate.id
+      id: dataCreate.id,
+      company: dataCreate.company
+    })
+    setValue(e.target.value);
+  };
+
+  const onChangeCompany = (e: RadioChangeEvent) => {
+    setDataCreate({
+      username: dataCreate.username,
+      address: dataCreate.address,
+      birthday: dataCreate.birthday,
+      role: dataCreate.role,
+      id: dataCreate.id,
+      company: e.target.value,
     })
     setValue(e.target.value);
   };
@@ -274,12 +299,12 @@ export default function Dashboard(props: any) {
     //   dispatch(getalltodoRequest({page: page, pagesize: 5}))
     // }
   }
-  const loading = useSelector((state:any)=> state.loading) 
+  const loading = useSelector((state: any) => state.loading)
 
   const dateFormat = 'YYYY/MM/DD';
   return (
     <div className={styles.dashboard__block}>
-       {loading ? <div className={styles.loading}><Spin size="large" /></div> : ''}
+      {loading ? <div className={styles.loading}><Spin size="large" /></div> : ''}
       <div className={styles.dashboard__flex}>
         <div >
           <Button type="primary" ghost className={styles.dashboard__button__show} onClick={showDrawer}>
@@ -316,6 +341,19 @@ export default function Dashboard(props: any) {
         <p className={styles.dashboard__color__text}> Birthday: </p>
         <DatePicker onChange={onChangeDate} />
 
+
+        <p className={styles.dashboard__color__text}> Company: </p>
+        <Radio.Group onChange={onChangeCompany}  >
+          {companyData?.map((value: any) => {
+            return (
+              <Radio key={value.id} value={value.id}>{value.name}</Radio>
+            )
+
+          })}
+
+        </Radio.Group>
+
+        <p className={styles.dashboard__color__text}> Role: </p>
         <div className={styles.dashboard__color__text} >
           <Radio.Group onChange={onChangeRole} value={value}>
             <Radio value={'Admin'}>Admin</Radio>
@@ -337,7 +375,18 @@ export default function Dashboard(props: any) {
 
           <p className={styles.dashboard__color__text}> Birthday: </p>
           <DatePicker onChange={onChangeDate} defaultValue={dayjs(`${dataCreate.birthday}`, dateFormat)} />
+          <p className={styles.dashboard__color__text}> Company: </p>
+          <Radio.Group onChange={onChangeCompany} value={dataCreate.company}  >
+            {companyData?.map((value: any) => {
+              return (
+                <Radio value={value.id}>{value.name}</Radio>
+              )
 
+            })}
+
+          </Radio.Group>
+
+          <p className={styles.dashboard__color__text}> Role: </p>
           <div className={styles.dashboard__color__text} >
             <Radio.Group onChange={onChangeRole} value={dataCreate.role} >
               <Radio value={'Admin'}>Admin</Radio>
@@ -346,10 +395,11 @@ export default function Dashboard(props: any) {
           </div>
         </div>
       </Modal>
-
+      <h1 className={styles.table__title}>User</h1>
       <Table columns={columns} dataSource={data} bordered pagination={false} />
-
       <div className={styles.dashboard__pagina}> <Pagination onChange={handlChangePagina} defaultCurrent={1} total={50} />;</div>
+      <h1 className={styles.table__title}>Company</h1>
+      <TableCompnent companyData={companyData}></TableCompnent>
     </div>
   );
 }

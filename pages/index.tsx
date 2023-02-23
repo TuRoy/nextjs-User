@@ -18,7 +18,6 @@ export default function Home() {
 const router = useRouter()
   useEffect(()=>{
     const token = Cookies.get('cookie-todo')
-  
     if(token){
         router.push('/dashboard')
     }

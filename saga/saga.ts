@@ -2,15 +2,76 @@ import axios from 'axios'
 import { all, call, takeEvery, put, take, takeLatest } from 'redux-saga/effects'
 import { notification } from 'antd';
 import Cookies from 'js-cookie'
-import { actionTypes, getalltodoRequest, setLoading, setSizeData, todolistData } from './action'
-import axiosConfig from '@/config/AxiosConfig';
+import { actionTypes, companyRequest, findonecompanySuccess, getalltodoRequest, getCompanySuccess, setLoading, setSizeData, todolistData } from './action'
+import axiosConfig from '@/pages/config/AxiosConfig';
 
 
 
 const getalltodoApi = async (data: any) => {
-
-    return await axiosConfig.get(`/list-users?filter={"limit": ${data.pagesize}, "skip": ${(data.pages - 1) * data.pagesize}}`)
+    return await axiosConfig.get(`/list-users?filter={"limit": ${data.pagesize}, "skip": ${(data.pages - 1) * data.pagesize}, "include": [{"relation": "company"}]}`)
 }
+
+const getallcompanyApi = async () => {
+    return await axiosConfig.get(`/companies?filter={ "include": [{"relation": "listuser"}]}`)
+}
+
+const findonecompanyApi = async (data: any) => {
+    return await axiosConfig.get(`/companies/${data}?filter={"include": [{"relation": "listuser"}]}`,)
+}
+
+const createcompanyApi = async (data: any) => {
+    return await axiosConfig.post(`/companies`, data)
+}
+
+const deletecompanyApi = async (data: any) => {
+    return await axiosConfig.delete(`/companies/${data}`,)
+}
+
+
+
+
+function* findonecompanySaga({ payload }: any): any {
+    const { ID } = payload
+    yield put(setLoading(true))
+    const res = yield call(findonecompanyApi, ID)
+    if (res) {
+        yield put(findonecompanySuccess(res.data))
+        yield put(setLoading(false))
+    }
+}
+
+
+
+function* deletecompanySaga({ payload }: any): any {
+    const { ID } = payload
+    yield put(setLoading(true))
+    const res = yield call(deletecompanyApi, ID)
+    if (res) {
+        yield put(getalltodoRequest(true))
+        yield put(companyRequest(true))
+        yield put(setLoading(false))
+    }
+}
+
+function* getallcompanySaga({ payload }: any): any {
+    yield put(setLoading(true))
+    const res = yield call(getallcompanyApi)
+    if (res.data) {
+        yield put(getCompanySuccess(res.data))
+        yield put(setLoading(false))
+    }
+}
+
+function* createcompanySaga({ payload }: any): any {
+    const { company, city } = payload
+    yield put(setLoading(true))
+    const res = yield call(createcompanyApi, { name: company, city })
+    if (res.data) {
+        yield put(companyRequest(true))
+        yield put(setLoading(false))
+    }
+}
+
 
 
 
@@ -26,6 +87,8 @@ function* getalltodoSaga({ payload }: any): any {
         yield put(setLoading(false))
     }
 }
+
+
 const findApi = async (data: any) => {
 
     if (data.search) {
@@ -34,9 +97,9 @@ const findApi = async (data: any) => {
               "skip":${(data.pages - 1) * data.pagesize} ,
                "where": {
                  "username": {"like": "${data.search}"} } 
-                }`)
+                },  "include": [{"relation": "company"}]`)
     }
-    if (data.role) { return await axiosConfig.get(`/list-users?filter={"limit":  ${data.pagesize}, "skip":${(data.pages - 1) * data.pagesize} ,"where": {"role": "${data.role}"}}`) }
+    if (data.role) { return await axiosConfig.get(`/list-users?filter={"limit":  ${data.pagesize}, "skip":${(data.pages - 1) * data.pagesize} ,"where": {"role": "${data.role}"}, "include": [{"relation": "company"}]}`) }
     if (data.search && data.role) {
         return await axiosConfig.get(`/list-users?filter={
             "limit":  ${data.pagesize}, 
@@ -44,11 +107,12 @@ const findApi = async (data: any) => {
             "where": {
                 "role" : "${data.role}",
                 "username": {"like": "${data.search}"}
-                }
+                },
+            "include": [{"relation": "company"}]
             }`)
     }
     if (!data.role && !data.search) {
-        return await axiosConfig.get(`/list-users?filter={ "limit":  ${data.pagesize}, "skip":${(data.pages - 1) * data.pagesize}`)
+        return await axiosConfig.get(`/list-users?filter={ "limit":  ${data.pagesize}, "skip":${(data.pages - 1) * data.pagesize}, "include": [{"relation": "company"}]}`)
 
     }
 }
@@ -69,11 +133,11 @@ function* findSaga({ payload }: any): any {
 }
 
 const postApiLogin = async (data: any) => {
-    return await axios.post('http://localhost:4000/users/login', data)
+    return await axiosConfig.post('/users/login', data)
 }
 
 const postApiRegister = async (data: any) => {
-    return await axios.post('http://localhost:4000/signup', data)
+    return await axiosConfig.post('/signup', data)
 }
 
 function* loginSaga({ payload }: any): any {
@@ -83,7 +147,7 @@ function* loginSaga({ payload }: any): any {
     console.log(69, res);
     if (res) {
         yield put(setLoading(false))
-        Cookies.set('cookie-todo', res.data.token, { expires: new Date(Date.now() + 900000) })
+        Cookies.set('cookie-todo', res.data.token, { expires: new Date(Date.now() + 180000000) })
         notification.open({
             message: 'login success',
         });
@@ -168,11 +232,12 @@ const putApi = async (data: any) => {
 function* changeSaga({ payload }: any): any {
     yield put(setLoading(true))
 
-    const { id, username, role, address, birthday } = payload
-    const res = yield call(putApi, { id: id, username, role, birthday, address })
+    const { id, username, role, address, birthday, company } = payload
+    const res = yield call(putApi, { id: id, username, role, birthday, address, companyId: company })
     if (res) {
         yield put(setLoading(false))
         yield put(getalltodoRequest(true))
+        yield put(companyRequest(true))
         notification.open({
             message: "change success",
         });
@@ -182,9 +247,9 @@ function* changeSaga({ payload }: any): any {
 
 
 function* addSaga({ payload }: any): any {
-    const { username, birthday, role, address } = payload
+    const { username, birthday, role, address, company } = payload
     yield put(setLoading(true))
-    const res = yield call(addApi, { username, birthday, role, address })
+    const res = yield call(addApi, { username, birthday, role, address, companyId: company })
     if (res) {
         notification.open({
             message: "create success",
@@ -200,14 +265,18 @@ function* addSaga({ payload }: any): any {
 
 function* rootSaga(): any {
     yield all([
-        yield takeLatest(actionTypes.FILTER_REQUEST, findSaga),
+        yield takeEvery(actionTypes.FIND_ONE_COMPANY_REQUEST, findonecompanySaga),
+        yield takeEvery(actionTypes.DELETE_COMPANY_REQUEST, deletecompanySaga),
+        yield takeEvery(actionTypes.CREATE_COMPANY_REQUEST, createcompanySaga),
+        yield takeEvery(actionTypes.GETALLCOMPANY_REQUEST, getallcompanySaga),
+        yield takeEvery(actionTypes.FILTER_REQUEST, findSaga),
         yield takeEvery(actionTypes.LOGIN_REQUEST, loginSaga),
-        yield takeLatest(actionTypes.REGISTER_REQUEST, registerSaga),
-        yield takeLatest(actionTypes.DELETE_REQUEST, deleteSaga),
-        yield takeLatest(actionTypes.ADD_REQUEST, addSaga),
-        yield takeLatest(actionTypes.GETALLTODO_REQUEST, getalltodoSaga),
-        yield takeLatest(actionTypes.CHANGE_REQUSET, changeSaga),
-        yield takeLatest(actionTypes.FIND_ROLE_REQUEST, FindRoleSaga)
+        yield takeEvery(actionTypes.REGISTER_REQUEST, registerSaga),
+        yield takeEvery(actionTypes.DELETE_REQUEST, deleteSaga),
+        yield takeEvery(actionTypes.ADD_REQUEST, addSaga),
+        yield takeEvery(actionTypes.GETALLTODO_REQUEST, getalltodoSaga),
+        yield takeEvery(actionTypes.CHANGE_REQUSET, changeSaga),
+        yield takeEvery(actionTypes.FIND_ROLE_REQUEST, FindRoleSaga)
     ])
 }
 

@@ -6,6 +6,8 @@ const initialState = {
     loading: false,
     todoList: null,
     size: null,
+    company: null,
+    findonecompany: null
 }
 
 
@@ -17,6 +19,16 @@ function reducer(state = initialState, action: any) {
             return {
                 ...state,
                 ...{ loginRequest: action.payload }
+            }
+        case actionTypes.COMPANY_DATA_SUCCESS:
+            return {
+                ...state,
+                ...{ company: action.payload }
+            }
+        case actionTypes.FIND_ONE_COMPANY_SUCCESS:
+            return {
+                ...state,
+                ...{ findonecompany: action.payload }
             }
         case actionTypes.SET_SIZE:
             return {
