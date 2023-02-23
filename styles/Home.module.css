@@ -92,6 +92,23 @@
 .addbtn{
   margin: 20px;
 }
+.headerStyle{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #fff;
+  height: 64;
+  padding-inline: 50;
+  line-height: 64px;
+  background-color: #7dbcea;
+   
+}
+.contentStyle{
+  text-align: center;
+  height: calc(100vh - 64px);
+  color: #fff;
+  background-color: #ccc;
+}
 .forms_css{
   /* float: left; */
   border: 1px solid #000;

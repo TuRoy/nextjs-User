@@ -8,14 +8,10 @@ import { loginRequest } from '@/saga/action';
 import { useSelector } from 'react-redux/es/exports';
 import { useRouter } from 'next/router';
 
-
-// const inter = Inter({ subsets: ['latin'] })
 export default function Signin() {
   const loading = useSelector((state:any)=> state.loading) 
   const router = useRouter()
-
   const dispatch = useDispatch()
-
 
   const onFinish = (values: any) => {
     dispatch(loginRequest({
@@ -40,7 +36,6 @@ export default function Signin() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        
         {loading ? <div className={styles.loading}><Spin size="large" /></div> : ''}
       <div className={styles.login__block}>
           <h1 className={styles.title__signup}>Login</h1>
@@ -79,7 +74,6 @@ export default function Signin() {
               <Link href={'./signup'}> <p className={styles.p}>Tạo tài khoản</p></Link>
             </Form.Item>
           </Form>
-
         </div>
       </main>
     </>

@@ -13,27 +13,16 @@ import { SearchOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import TableCompnent from '@/components/table/table';
 
-
-
-
-
-
 export default function Dashboard(props: any) {
   const dispatch = useDispatch()
   const router = useRouter()
-
-
-
   const rolequery = router.query.role
   const namequery = router.query.search
   const pagequery = router.query.page
-
-
-
-
   let data = useSelector((state: any) => state.todoList)
   let companyData = useSelector((state: any) => state.company)
-  let size = useSelector((state: any) => state.size)
+  const loading = useSelector((state: any) => state.loading)
+  const dateFormat = 'YYYY/MM/DD';
 
   React.useEffect(() => {
     const token = Cookies.get('cookie-todo')
@@ -66,10 +55,9 @@ export default function Dashboard(props: any) {
     }
   }, [router])
 
-  // ***************************************************
-
-
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dataCreate, setDataCreate] = useState({ username: '', address: '', birthday: '', role: '', id: '', company: '' })
+
 
   const showModal = (value: any) => {
     setIsModalOpen(true);
@@ -77,7 +65,6 @@ export default function Dashboard(props: any) {
 
   const handleOk = () => {
     dispatch(changeRequest(dataCreate))
-    // dispatch(companyRequest(true))
     setIsModalOpen(false);
   };
 
@@ -85,23 +72,13 @@ export default function Dashboard(props: any) {
     setIsModalOpen(false);
   };
 
-
-  // ***************************************************
-
-  const [dataCreate, setDataCreate] = useState({ username: '', address: '', birthday: '', role: '', id: '', company: '' })
-  const [pagina, setPagina] = useState(1)
-
-
   const handleDelete = (ID: any) => {
     dispatch(deleteRequest({ _ID: ID }))
     dispatch(companyRequest(true))
   }
 
   const handleOpenChange = (ID: any) => {
-    console.log(109, ID);
     let newdata = data.find((val: any) => val.id == ID)
-    console.log(111, data);
-
     setDataCreate({
       username: newdata.username,
       address: newdata.address,
@@ -109,11 +86,9 @@ export default function Dashboard(props: any) {
       role: newdata.role,
       id: newdata.id,
       company: newdata.companyId
-
     })
     showModal(ID)
   }
-
 
   const handleCreate = () => {
     dispatch(addlistRequest(dataCreate))
@@ -129,7 +104,6 @@ export default function Dashboard(props: any) {
       role: dataCreate.role,
       id: dataCreate.id,
       company: dataCreate.company
-
     })
   }
 
@@ -141,21 +115,16 @@ export default function Dashboard(props: any) {
       role: dataCreate.role,
       id: dataCreate.id,
       company: dataCreate.company
-
     })
   }
 
-
   const handleLogout = () => {
-    Cookies.set('cookie-todo', '')
-    Cookies.set('todo-username', '')
-    Cookies.set('todo-role', '')
+    Cookies.remove('cookie-todo')
+    Cookies.remove('todo-username')
+    Cookies.remove('todo-role')
     router.push('/')
   }
-  // ***************************************************
-
-
-
+  
   interface DataType {
     key: string;
     name: string;
@@ -207,8 +176,6 @@ export default function Dashboard(props: any) {
 
   ];
 
-  // ***************************************************
-
   const [open, setOpen] = useState(false);
 
   const showDrawer = () => {
@@ -219,9 +186,6 @@ export default function Dashboard(props: any) {
     setOpen(false);
   };
 
-  // ***************************************************
-
-
   const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
     setDataCreate({
       username: dataCreate.username,
@@ -230,12 +194,8 @@ export default function Dashboard(props: any) {
       role: dataCreate.role,
       id: dataCreate.id,
       company: dataCreate.company
-
     })
   };
-
-
-
 
   const [value, setValue] = useState(1);
 
@@ -269,8 +229,8 @@ export default function Dashboard(props: any) {
       pathname: '/dashboard',
       query: { search: nameSearch ? nameSearch : '', role: value, page: 1, pagesize: 5 }
     })
-    console.log(`selected ${value}`);
   };
+
   const [nameSearch, setNameSearch] = useState('')
 
   const handleChangeSearch = (e: any) => {
@@ -283,25 +243,16 @@ export default function Dashboard(props: any) {
       pathname: '/dashboard',
       query: { search: nameSearch, role: rolequery ? rolequery : '', page: 1, pagesize: 5 }
     })
-
   }
 
-
   const handlChangePagina = (page: any, pageSize: any) => {
-    setPagina(page)
     router.push({
       pathname: '/dashboard',
       query: { search: nameSearch, role: rolequery ? rolequery : '', page: page, pagesize: 5 }
     })
-    // if(rolequery || namequery){
-    //   dispatch(filterRequest({search: namequery, role: rolequery}))
-    // }else{
-    //   dispatch(getalltodoRequest({page: page, pagesize: 5}))
-    // }
   }
-  const loading = useSelector((state: any) => state.loading)
+  
 
-  const dateFormat = 'YYYY/MM/DD';
   return (
     <div className={styles.dashboard__block}>
       {loading ? <div className={styles.loading}><Spin size="large" /></div> : ''}
@@ -398,6 +349,7 @@ export default function Dashboard(props: any) {
       <h1 className={styles.table__title}>User</h1>
       <Table columns={columns} dataSource={data} bordered pagination={false} />
       <div className={styles.dashboard__pagina}> <Pagination onChange={handlChangePagina} defaultCurrent={1} total={50} />;</div>
+
       <h1 className={styles.table__title}>Company</h1>
       <TableCompnent companyData={companyData}></TableCompnent>
     </div>

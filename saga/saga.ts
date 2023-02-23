@@ -2,8 +2,8 @@ import axios from 'axios'
 import { all, call, takeEvery, put, take, takeLatest } from 'redux-saga/effects'
 import { notification } from 'antd';
 import Cookies from 'js-cookie'
-import { actionTypes, companyRequest, findonecompanySuccess, getalltodoRequest, getCompanySuccess, setLoading, setSizeData, todolistData } from './action'
-import axiosConfig from '@/pages/config/AxiosConfig';
+import { actionTypes, companyRequest, findonecompanySuccess, getalltodoRequest, getCompanySuccess, setLoading, setSizeData, settoken, todolistData } from './action'
+import axiosConfig from '@/config/AxiosConfig';
 
 
 
@@ -19,14 +19,25 @@ const findonecompanyApi = async (data: any) => {
     return await axiosConfig.get(`/companies/${data}?filter={"include": [{"relation": "listuser"}]}`,)
 }
 
-const createcompanyApi = async (data: any) => {
-    return await axiosConfig.post(`/companies`, data)
-}
-
 const deletecompanyApi = async (data: any) => {
     return await axiosConfig.delete(`/companies/${data}`,)
 }
 
+const deleteApi = async (data: any) => {
+    return await axiosConfig.delete(`/list-users/${data.id}`,)
+}
+
+const createcompanyApi = async (data: any) => {
+    return await axiosConfig.post(`/companies`, data)
+}
+
+const postApiLogin = async (data: any) => {
+    return await axiosConfig.post('/users/login', data)
+}
+
+const postApiRegister = async (data: any) => {
+    return await axiosConfig.post('/signup', data)
+}
 
 
 
@@ -132,22 +143,16 @@ function* findSaga({ payload }: any): any {
 
 }
 
-const postApiLogin = async (data: any) => {
-    return await axiosConfig.post('/users/login', data)
-}
 
-const postApiRegister = async (data: any) => {
-    return await axiosConfig.post('/signup', data)
-}
 
 function* loginSaga({ payload }: any): any {
     const { email, password, callback } = payload
     yield put(setLoading(true))
     const res = yield call(postApiLogin, { email, password })
-    console.log(69, res);
     if (res) {
-        yield put(setLoading(false))
         Cookies.set('cookie-todo', res.data.token, { expires: new Date(Date.now() + 180000000) })
+        yield put(setLoading(false))
+        yield put(settoken(res.data.token))
         notification.open({
             message: 'login success',
         });
@@ -181,9 +186,6 @@ function* registerSaga({ payload }: any): any {
 
 
 
-const deleteApi = async (data: any) => {
-    return await axiosConfig.delete(`/list-users/${data.id}`,)
-}
 
 
 function* deleteSaga({ payload }: any): any {
@@ -270,7 +272,7 @@ function* rootSaga(): any {
         yield takeEvery(actionTypes.CREATE_COMPANY_REQUEST, createcompanySaga),
         yield takeEvery(actionTypes.GETALLCOMPANY_REQUEST, getallcompanySaga),
         yield takeEvery(actionTypes.FILTER_REQUEST, findSaga),
-        yield takeEvery(actionTypes.LOGIN_REQUEST, loginSaga),
+        yield takeLatest(actionTypes.LOGIN_REQUEST, loginSaga),
         yield takeEvery(actionTypes.REGISTER_REQUEST, registerSaga),
         yield takeEvery(actionTypes.DELETE_REQUEST, deleteSaga),
         yield takeEvery(actionTypes.ADD_REQUEST, addSaga),

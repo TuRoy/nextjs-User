@@ -1,50 +1,23 @@
 import Head from 'next/head'
-import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
 import { Button, Avatar } from 'antd';
-import { Layout, Space } from 'antd';
+import { Layout } from 'antd';
 import Link from 'next/link';
 import Cookies from 'js-cookie'
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-
-
 const { Header, Footer, Sider, Content } = Layout;
 
-const inter = Inter({ subsets: ['latin'] })
-
 export default function Home() {
-
+const username = Cookies.get('todo-username')
 const router = useRouter()
+
   useEffect(()=>{
     const token = Cookies.get('cookie-todo')
     if(token){
         router.push('/dashboard')
     }
   }, [])
-
-
-  const headerStyle: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    color: '#fff',
-    height: 64,
-    paddingInline: 50,
-    lineHeight: '64px',
-    backgroundColor: '#7dbcea',
-  };
-
-  const contentStyle: React.CSSProperties = {
-    textAlign: 'center',
-    height: 'calc(100vh - 64px)',
-    color: '#fff',
-    backgroundColor: '#ccc',
-  };
-
-  const username = Cookies.get('todo-username')
-
-
 
   return (
     <>
@@ -57,7 +30,7 @@ const router = useRouter()
 
       <div>
         <Layout>
-          <Header style={headerStyle}>
+          <Header className={styles.headerStyle}>
             {username ? <Link href={'/test'}><h1>Dashboard</h1></Link> : <h1>Home</h1>}
             {username ? <div className={styles.home__avatar}>
               <Avatar style={{ backgroundColor: '#fde3cf', color: '#f56a00' }}>{username[0].toUpperCase()}</Avatar>
@@ -65,7 +38,7 @@ const router = useRouter()
             </div> : <Link href={'/signin'}>
               <Button>Login</Button></Link>}
           </Header>
-          <Content style={contentStyle}>
+          <Content className={styles.contentStyle}>
           </Content>
         </Layout>
       </div>

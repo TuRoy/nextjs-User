@@ -11,6 +11,7 @@ export const actionTypes = {
     FIND_ROLE_REQUEST: "FIND_ROLE_REQUEST",
     FILTER_REQUEST: "FILTER_REQUEST",
     SET_SIZE: "SET_SIZE",
+    TOKEN: "TOKEN",
 
     GETALLCOMPANY_REQUEST: "GETALLCOMPANY_REQUEST",
     COMPANY_DATA_SUCCESS: "COMPANY_DATA_SUCCESS",
@@ -24,6 +25,13 @@ export const actionTypes = {
 export function companyRequest (data:any){
     return {
         type: actionTypes.GETALLCOMPANY_REQUEST,
+        payload: data
+    }
+}
+
+export function settoken (data:any){
+    return {
+        type: actionTypes.TOKEN,
         payload: data
     }
 }

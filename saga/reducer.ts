@@ -7,7 +7,8 @@ const initialState = {
     todoList: null,
     size: null,
     company: null,
-    findonecompany: null
+    findonecompany: null,
+    token: null
 }
 
 
@@ -20,6 +21,11 @@ function reducer(state = initialState, action: any) {
                 ...state,
                 ...{ loginRequest: action.payload }
             }
+            case actionTypes.TOKEN:
+                return {
+                    ...state,
+                    ...{ token: action.payload }
+                }
         case actionTypes.COMPANY_DATA_SUCCESS:
             return {
                 ...state,

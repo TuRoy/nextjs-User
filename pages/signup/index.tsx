@@ -7,13 +7,9 @@ import { useDispatch } from 'react-redux/es/exports';
 import { registerRequest } from '@/saga/action';
 import { useRouter } from 'next/router';
 
-
-// const inter = Inter({ subsets: ['latin'] })
-
 export default function Signup() {
   const dispatch = useDispatch()
   const router = useRouter()
-
 
   const onFinish = (values: any) => {
     console.log('Success:', values);
