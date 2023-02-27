@@ -1,22 +1,18 @@
 import * as React from 'react';
 import { Button, Table, Modal, Form, Input } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useEffect, useState } from 'react';
+import {useState } from 'react';
 import styles from '@/styles/Home.module.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { createCompanyRequest, deletecompanyRequest, findonecompanyRequest } from '@/saga/action';
 
 
-export interface ITableCompnentProps {
+export interface ITablecompanyProps {
 }
 
-
-
-
-
-export default function TableCompnent(props: any) {
+export default function Tablecompany(props: any) {
   const [open, setOpen] = useState(false);
-  // const [companyId, setCompanyId] = useState();
+  const dispatch = useDispatch()
   let dataCompanyId = useSelector((state: any) => state.findonecompany)
 
 
@@ -33,65 +29,64 @@ export default function TableCompnent(props: any) {
       title: 'Name',
       dataIndex: 'username',
       key: 'username',
-      render: (text) => <h3>{text}</h3>,
+      render: (text) => <h3 key={text}>{text}</h3>,
     },
     {
       title: 'address',
       dataIndex: 'address',
       key: 'address',
-      render: (text) => <a>{text}</a>,
+      render: (text) => <a key={text}>{text}</a>,
     },
     {
       title: 'Birthday',
       dataIndex: 'birthday',
       key: 'birthday',
-      render: (text) => <a>{(new Date(text)).toLocaleDateString()}</a>,
+      render: (text) => <a key={text}>{(new Date(text)).toLocaleDateString()}</a>,
 
     },
     {
       title: 'Role',
       dataIndex: 'role',
       key: 'role',
-      render: (text) => <a>{text}</a>,
+      render: (text) => <a key={text}>{text}</a>,
     },
   ];
-
 
   const columns: ColumnsType<DataType> = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text) => <h3>{text}</h3>,
+      render: (text) => <h3 key={text}>{text}</h3>,
     },
     {
       title: 'City',
       dataIndex: 'city',
       key: 'city',
-      render: (text) => <a>{text}</a>,
+      render: (text) => <a key={text}>{text}</a>,
     },
     {
       title: 'People',
       dataIndex: 'listuser',
       key: 'listuser',
-      render: (text) => <a>{text?.length ? text?.length : 0}</a>,
+      render: (text) => <a key={text}>{text?.length ? text?.length : 0}</a>,
 
     },
     {
       title: 'Show more',
       dataIndex: 'id',
       key: 'id',
-      render: (text) => <a>{<Button onClick={() => { handleOpenModel(text) }}> more</Button>}</a>,
+      render: (text) => <a key={text}>{<Button onClick={() => { handleOpenModel(text) }}> more</Button>}</a>,
     },
     {
       title: 'DELETE',
       dataIndex: 'id',
       key: 'id',
-      render: (text) => <a> <div className={styles.dashboard__flex__center}> <Button onClick={() => hanldeDeleteCompany(text)} danger> Delete</Button></div></a>,
+      render: (text) => <a key={text}> <div className={styles.dashboard__flex__center}> <Button onClick={() => hanldeDeleteCompany(text)} danger> Delete</Button></div></a>,
     },
 
   ];
-  const dispatch = useDispatch()
+  
   const handleOpenModel = (ID: any) => {
     dispatch(findonecompanyRequest({ ID }))
     setOpen(true)
@@ -101,8 +96,6 @@ export default function TableCompnent(props: any) {
     dispatch(deletecompanyRequest({ ID }))
   }
 
-
-
   const onFinish = (values: any) => {
     console.log('Success:', values);
     dispatch(createCompanyRequest(values))
@@ -111,9 +104,10 @@ export default function TableCompnent(props: any) {
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
+
   return (
     <div>
-
+      <h1 className={styles.table__title}>Company</h1>
       <Table columns={columns} dataSource={props.companyData} bordered />
       <Form
         className={styles.forms_css}

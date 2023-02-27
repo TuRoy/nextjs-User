@@ -1,6 +1,5 @@
 import axios from "axios";
 import Cookies from 'js-cookie'
-import { useSelector } from "react-redux";
 
 
 const token = Cookies.get('cookie-todo')
