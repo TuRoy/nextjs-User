@@ -1,5 +1,5 @@
 import { addlistRequest, companyRequest } from '@/saga/action';
-import { Button, Input, Drawer, DatePicker, Radio, Select, Tooltip,} from 'antd';
+import { Button, Input, Drawer, DatePicker, Radio, Select, Tooltip, } from 'antd';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from '@/styles/Home.module.css'
@@ -43,7 +43,6 @@ export default function Headers(props: IHeadersProps) {
   }
 
   const handleSearch = () => {
-    console.log(nameSearch.length)
     router.push({
       pathname: '/dashboard',
       query: { search: nameSearch, role: rolequery ? rolequery : '', page: 1, pagesize: 5 }
@@ -52,8 +51,6 @@ export default function Headers(props: IHeadersProps) {
 
   const handleLogout = () => {
     Cookies.remove('cookie-todo')
-    Cookies.remove('todo-username')
-    Cookies.remove('todo-role')
     router.push('/')
   }
 
@@ -61,60 +58,23 @@ export default function Headers(props: IHeadersProps) {
     setOpen(false);
   };
 
-  const onchangeUsername = (e: any) => {
-    setDataCreate({
-      username: e.target.value,
-      address: dataCreate.address,
-      birthday: dataCreate.birthday,
-      role: dataCreate.role,
-      id: dataCreate.id,
-      company: dataCreate.company
-    })
-  }
-
-  const onchangeAddress = (e: any) => {
-    setDataCreate({
-      username: dataCreate.username,
-      address: e.target.value,
-      birthday: dataCreate.birthday,
-      role: dataCreate.role,
-      id: dataCreate.id,
-      company: dataCreate.company
-    })
+  const onchangeDrawer = (e: any) => {
+    let clone = { ...dataCreate }
+    clone[e.target.id] = e.target.value
+    setDataCreate(clone)
   }
 
   const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
-    setDataCreate({
-      username: dataCreate.username,
-      address: dataCreate.address,
-      birthday: dateString,
-      role: dataCreate.role,
-      id: dataCreate.id,
-      company: dataCreate.company
-    })
+    let clone = {...dataCreate}
+    clone.birthday = dateString
+    setDataCreate(clone)
   };
 
-  const onChangeCompany = (e: RadioChangeEvent) => {
-    setDataCreate({
-      username: dataCreate.username,
-      address: dataCreate.address,
-      birthday: dataCreate.birthday,
-      role: dataCreate.role,
-      id: dataCreate.id,
-      company: e.target.value,
-    })
-    setValue(e.target.value);
-  };
 
-  const onChangeRole = (e: RadioChangeEvent) => {
-    setDataCreate({
-      username: dataCreate.username,
-      address: dataCreate.address,
-      birthday: dataCreate.birthday,
-      role: e.target.value,
-      id: dataCreate.id,
-      company: dataCreate.company
-    })
+  const onChangeRadio = (e: RadioChangeEvent) => {
+    let clone = { ...dataCreate }
+    clone[e.target.name] = e.target.value
+    setDataCreate(clone)
     setValue(e.target.value);
   };
 
@@ -128,29 +88,28 @@ export default function Headers(props: IHeadersProps) {
     <div>
       <Drawer title="Basic Drawer" placement="right" onClose={onClose} open={open}>
         <p className={styles.dashboard__color__text}>Username:</p>
-        <Input onChange={onchangeUsername} placeholder='UserName' type='text'></Input>
+        <Input onChange={onchangeDrawer} id="username" placeholder='UserName' type='text'></Input>
 
         <p className={styles.dashboard__color__text}> Address: </p>
-        <Input onChange={onchangeAddress} placeholder='Address' type='text'></Input>
+        <Input onChange={onchangeDrawer} id="address" placeholder='Address' type='text'></Input>
 
         <p className={styles.dashboard__color__text}> Birthday: </p>
         <DatePicker onChange={onChangeDate} />
 
 
         <p className={styles.dashboard__color__text}> Company: </p>
-        <Radio.Group onChange={onChangeCompany}  >
+        <Radio.Group onChange={onChangeRadio} name='company' >
           {companyData?.map((value: any) => {
             return (
               <Radio key={value.id} value={value.id}>{value.name}</Radio>
             )
-
           })}
 
         </Radio.Group>
 
         <p className={styles.dashboard__color__text}> Role: </p>
         <div className={styles.dashboard__color__text} >
-          <Radio.Group onChange={onChangeRole} value={value}>
+          <Radio.Group onChange={onChangeRadio} name='role' value={value}>
             <Radio value={'Admin'}>Admin</Radio>
             <Radio value={'User'}>User</Radio>
           </Radio.Group>
@@ -158,6 +117,7 @@ export default function Headers(props: IHeadersProps) {
         <div>
           <Button className={styles.dashboard__button} type='primary' onClick={handleCreate}>Create</Button>
         </div>
+        
       </Drawer>
       <div className={styles.dashboard__flex}>
         <div >

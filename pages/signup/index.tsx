@@ -1,7 +1,6 @@
 import Head from 'next/head'
-// import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Form, Input } from 'antd';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux/es/exports';
 import { registerRequest } from '@/saga/action';
@@ -50,7 +49,6 @@ export default function Signup() {
             autoComplete="off"
           >
             <Form.Item
-              // label="Username"
             className={styles.input}
               name="username"
               rules={[{ required: true, message: 'Please input your username!' }]}
@@ -60,7 +58,6 @@ export default function Signup() {
 
             <Form.Item
             className={styles.input}
-              // label="Password"
               name="password"
               rules={[{ required: true, message: 'Please input your password!' }]}
             >

@@ -1,5 +1,4 @@
-import axios from 'axios'
-import { all, call, takeEvery, put, take, takeLatest } from 'redux-saga/effects'
+import { all, call, takeEvery, put, takeLatest } from 'redux-saga/effects'
 import { notification } from 'antd';
 import Cookies from 'js-cookie'
 import { actionTypes, companyRequest, findonecompanySuccess, getalltodoRequest, getCompanySuccess, setLoading, setSizeData, settoken, todolistData } from './action'
@@ -39,8 +38,6 @@ const postApiRegister = async (data: any) => {
     return await axiosConfig.post('/signup', data)
 }
 
-
-
 function* findonecompanySaga({ payload }: any): any {
     const { ID } = payload
     yield put(setLoading(true))
@@ -50,8 +47,6 @@ function* findonecompanySaga({ payload }: any): any {
         yield put(setLoading(false))
     }
 }
-
-
 
 function* deletecompanySaga({ payload }: any): any {
     const { ID } = payload
@@ -83,9 +78,6 @@ function* createcompanySaga({ payload }: any): any {
     }
 }
 
-
-
-
 function* getalltodoSaga({ payload }: any): any {
     yield put(setLoading(true))
     const { page, pagesizes } = payload
@@ -99,7 +91,6 @@ function* getalltodoSaga({ payload }: any): any {
     }
 }
 
-
 const findApi = async (data: any) => {
 
     if (data.search) {
@@ -108,7 +99,7 @@ const findApi = async (data: any) => {
               "skip":${(data.pages - 1) * data.pagesize} ,
                "where": {
                  "username": {"like": "${data.search}"} } 
-                },  "include": [{"relation": "company"}]`)
+                , "include": [{"relation": "company"}]}`)
     }
     if (data.role) { return await axiosConfig.get(`/list-users?filter={"limit":  ${data.pagesize}, "skip":${(data.pages - 1) * data.pagesize} ,"where": {"role": "${data.role}"}, "include": [{"relation": "company"}]}`) }
     if (data.search && data.role) {
@@ -128,7 +119,6 @@ const findApi = async (data: any) => {
     }
 }
 
-
 function* findSaga({ payload }: any): any {
     yield put(setLoading(true))
     const { search, role, page, pagesizes } = payload
@@ -142,8 +132,6 @@ function* findSaga({ payload }: any): any {
     }
 
 }
-
-
 
 function* loginSaga({ payload }: any): any {
     const { email, password, callback } = payload
@@ -184,10 +172,6 @@ function* registerSaga({ payload }: any): any {
     }
 }
 
-
-
-
-
 function* deleteSaga({ payload }: any): any {
     yield put(setLoading(true))
     const { _ID } = payload
@@ -210,7 +194,6 @@ function* deleteSaga({ payload }: any): any {
 const findRoleApi = async (data: any) => {
     return await axiosConfig.get(`/api/todo/findrole/${data.role}`)
 }
-
 
 function* FindRoleSaga({ payload }: any): any {
     yield put(setLoading(true))
@@ -246,8 +229,6 @@ function* changeSaga({ payload }: any): any {
     }
 }
 
-
-
 function* addSaga({ payload }: any): any {
     const { username, birthday, role, address, company } = payload
     yield put(setLoading(true))
@@ -262,8 +243,6 @@ function* addSaga({ payload }: any): any {
 
 
 }
-
-
 
 function* rootSaga(): any {
     yield all([
@@ -281,6 +260,5 @@ function* rootSaga(): any {
         yield takeEvery(actionTypes.FIND_ROLE_REQUEST, FindRoleSaga)
     ])
 }
-
 
 export default rootSaga

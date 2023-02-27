@@ -55,13 +55,29 @@ export default function TableListuser(props: ITableListuserProps) {
         showModal(ID)
     }
 
-
     const onchangeModel = (e: any) => {
         let clone = {...dataCreate}
         clone[e.target.id] = e.target.value
-        console.log(71, clone);
-        console.log(70, e.target.id);
         setDataCreate(clone)
+    }
+
+    const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
+        let clone  = {...dataCreate}
+        clone.birthday = dateString
+        setDataCreate(clone)
+    };
+
+    const onChangeRadio = (e: RadioChangeEvent) => {
+        let clone  = {...dataCreate}
+        clone[e.target.name] = e.target.value
+        setDataCreate(clone)
+    };
+
+    const handlChangePagina = (page: any, pageSize: any) => {
+        router.push({
+            pathname: '/dashboard',
+            query: { role: rolequery ? rolequery : '', page: page, pagesize: 5 }
+        })
     }
 
     interface DataType {
@@ -112,48 +128,7 @@ export default function TableListuser(props: ITableListuserProps) {
                 <Button onClick={() => { handleDelete(text) }} danger>delete</Button>
             </div>,
         },
-
     ];
-
-    const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
-        setDataCreate({
-            username: dataCreate.username,
-            address: dataCreate.address,
-            birthday: dateString,
-            role: dataCreate.role,
-            id: dataCreate.id,
-            company: dataCreate.company
-        })
-    };
-
-    const onChangeRole = (e: RadioChangeEvent) => {
-        setDataCreate({
-            username: dataCreate.username,
-            address: dataCreate.address,
-            birthday: dataCreate.birthday,
-            role: e.target.value,
-            id: dataCreate.id,
-            company: dataCreate.company
-        })
-    };
-
-    const onChangeCompany = (e: RadioChangeEvent) => {
-        setDataCreate({
-            username: dataCreate.username,
-            address: dataCreate.address,
-            birthday: dataCreate.birthday,
-            role: dataCreate.role,
-            id: dataCreate.id,
-            company: e.target.value,
-        })
-    };
-
-    const handlChangePagina = (page: any, pageSize: any) => {
-        router.push({
-            pathname: '/dashboard',
-            query: { role: rolequery ? rolequery : '', page: page, pagesize: 5 }
-        })
-    }
 
     return (
         <div>
@@ -168,7 +143,7 @@ export default function TableListuser(props: ITableListuserProps) {
                     <p className={styles.dashboard__color__text}> Birthday: </p>
                     <DatePicker onChange={onChangeDate} defaultValue={dayjs(`${dataCreate.birthday}`, dateFormat)} />
                     <p className={styles.dashboard__color__text}> Company: </p>
-                    <Radio.Group onChange={onChangeCompany} value={dataCreate.company}  >
+                    <Radio.Group onChange={onChangeRadio} name='company' value={dataCreate.company}  >
                         {companyData?.map((value: any) => {
                             return (
                                 <Radio value={value.id}>{value.name}</Radio>
@@ -179,7 +154,7 @@ export default function TableListuser(props: ITableListuserProps) {
 
                     <p className={styles.dashboard__color__text}> Role: </p>
                     <div className={styles.dashboard__color__text} >
-                        <Radio.Group onChange={onChangeRole} value={dataCreate.role} >
+                        <Radio.Group onChange={onChangeRadio} name='role' value={dataCreate.role} >
                             <Radio value={'Admin'}>Admin</Radio>
                             <Radio value={'User'}>User</Radio>
                         </Radio.Group>

@@ -8,8 +8,7 @@ import { useRouter } from 'next/router';
 import TableCompany from '@/components/table/TableCompany';
 import Headers from '@/components/header/header';
 import TableListuser from '@/components/table/TableListuser';
-
-
+import { handleDelete } from '@/hhh';
 export default function Dashboard(props: any) {
   const dispatch = useDispatch()
   const router = useRouter()
@@ -52,6 +51,7 @@ export default function Dashboard(props: any) {
 
   return (
     <div className={styles.dashboard__block}>
+      <button onClick={()=>{handleDelete('63fc1752bd15e71adc364644')}}>asdasd</button>
       {loading ? <div className={styles.loading}><Spin size="large" /></div> : ''}
       <Headers></Headers>
       <TableListuser></TableListuser>
