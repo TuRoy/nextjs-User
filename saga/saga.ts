@@ -125,7 +125,6 @@ function* deleteSaga({ payload }: any): any {
     yield put(setLoading(true))
     const { _ID } = payload
     const res = yield call(deleteApi, { path: 'users', id: _ID })
-    console.log(180, res);
     if (res) {
         yield put(getalltodoRequest(false))
         yield put(setLoading(false))
@@ -140,7 +139,6 @@ function* changeSaga({ payload }: any): any {
 
     const { id, username, role, address, birthday, company } = payload
     const res = yield call(putApi, { id: id, username, role, birthday, address, companyId: company })
-    console.log(res, 228);
     if (!res.response) {
         yield put(setLoading(false))
         yield put(getalltodoRequest(true))
