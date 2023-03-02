@@ -65,11 +65,10 @@ export default function Headers(props: IHeadersProps) {
   }
 
   const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
-    let clone = {...dataCreate}
+    let clone = { ...dataCreate }
     clone.birthday = dateString
     setDataCreate(clone)
   };
-
 
   const onChangeRadio = (e: RadioChangeEvent) => {
     let clone = { ...dataCreate }
@@ -117,7 +116,7 @@ export default function Headers(props: IHeadersProps) {
         <div>
           <Button className={styles.dashboard__button} type='primary' onClick={handleCreate}>Create</Button>
         </div>
-        
+
       </Drawer>
       <div className={styles.dashboard__flex}>
         <div >
