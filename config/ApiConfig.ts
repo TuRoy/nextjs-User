@@ -1,6 +1,6 @@
 import axiosConfig from '@/config/AxiosConfig';
 
-export const  putApi = async (data: any) => {
+export const putApi = async (data: any) => {
     try {
         let test = await axiosConfig.put(`/users/${data.id}`, data)
         return test
@@ -10,7 +10,7 @@ export const  putApi = async (data: any) => {
 }
 
 export const getApi = async (data: any) => {
-    return await axiosConfig.get(`/${data.path}${data.id ? `/${data.id}`: ''}?filter={${data.pagesize ?`"limit":${data.pagesize},"skip":${(data.pages - 1) * data.pagesize},`:''}"where": {${data.role ? `"role" : "${data.role}"`:''}${data.search ? `${data.role ? ',':''}"username": {"like":"${data.search}"}`:''}},"include": [{"relation": "${data.relation}"}]}`)
+    return await axiosConfig.get(`/${data.path}${data.id ? `/${data.id}` : ''}?filter={${data.pagesize ? `"limit":${data.pagesize},"skip":${(data.pages - 1) * data.pagesize},` : ''} ${data.role || data.search ? ` "where": {${data.role ? `"role" : "${data.role}"` : ''}${data.search ? `${data.role ? ',' : ''}"username": {"like":"${data.search}"}` : ''}},` : ''}"include": [{"relation": "${data.relation}"}]}`)
 }
 
 export const deleteApi = async (data: any) => {
