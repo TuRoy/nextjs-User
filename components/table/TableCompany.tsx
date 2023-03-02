@@ -12,6 +12,7 @@ export interface ITablecompanyProps {
 
 export default function Tablecompany(props: any) {
   const [open, setOpen] = useState(false);
+  let companyData = useSelector((state: any) => state.company)
   const dispatch = useDispatch()
   let dataCompanyId = useSelector((state: any) => state.findonecompany)
 
@@ -108,7 +109,7 @@ export default function Tablecompany(props: any) {
   return (
     <div>
       <h1 className={styles.table__title}>Company</h1>
-      <Table columns={columns} dataSource={props.companyData} bordered />
+      <Table columns={columns} dataSource={companyData} bordered />
       <Form
         className={styles.forms_css}
         name="basic"
@@ -128,7 +129,7 @@ export default function Tablecompany(props: any) {
         >
           <Input placeholder='Company' />
         </Form.Item>
-        <p>Company :</p>
+        <p>City :</p>
 
         <Form.Item
 

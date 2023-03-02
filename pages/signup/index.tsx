@@ -17,7 +17,7 @@ export default function Signup() {
       password: values.password,
       username: values.username,
       callback: () =>{
-        return router.push('./signin')
+        return router.push('/signin')
       }
     }))
   };

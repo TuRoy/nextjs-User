@@ -1,7 +1,6 @@
 import axios from "axios";
 import Cookies from 'js-cookie'
 
-
 const token = Cookies.get('cookie-todo')
 const axiosConfig = axios.create({
         baseURL: 'http://localhost:4000'
