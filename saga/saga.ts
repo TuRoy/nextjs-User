@@ -12,12 +12,14 @@ import {
     settoken,
     todolistData
 } from './action'
-import { getApi, deleteApi, postApi, putApi } from '@/config/ApiConfig';
+import {  deleteApi, postApi, putApi, getApi} from '@/config/ApiConfig';
 
 function* findonecompanySaga({ payload }: any): any {
     const { ID } = payload
     yield put(setLoading(true))
-    const res = yield call(getApi, { path: 'companies', id: ID, relation: 'listuser' })
+    const res = yield call(getApi, {path: 'companies', documentId: ID, filter: {
+        include: [{relation: "listuser"}]
+    } })
     if (res) {
         yield put(findonecompanySuccess(res.data))
         yield put(setLoading(false))
@@ -27,7 +29,7 @@ function* findonecompanySaga({ payload }: any): any {
 function* deletecompanySaga({ payload }: any): any {
     const { ID } = payload
     yield put(setLoading(true))
-    const res = yield call(deleteApi, { path: 'companies', id: ID })
+    const res = yield call(deleteApi, { path: 'companies', documentId: ID })
     if (res) {
         yield put(getalltodoRequest(true))
         yield put(companyRequest(true))
@@ -37,7 +39,7 @@ function* deletecompanySaga({ payload }: any): any {
 
 function* getallcompanySaga({ payload }: any): any {
     yield put(setLoading(true))
-    const res = yield call(getApi, { path: 'companies', relation: 'listuser' })
+    const res = yield call(getApi, { path: 'companies', filter: {include: ['listuser']} })
     if (res.data) {
         yield put(getCompanySuccess(res.data))
         yield put(setLoading(false))
@@ -59,7 +61,7 @@ function* getalltodoSaga({ payload }: any): any {
     const { page, pagesizes } = payload
     let pages = page ? page : 1
     let pagesize = pagesizes ? pagesizes : 5
-    const res = yield call(getApi, { path: 'users', relation: 'company', pages, pagesize })
+    const res = yield call(getApi, { path: 'users',  filter: { include: ['company'], limit: `${pagesize}`, skip: `${(pages- 1)*pagesize}`}})
     if (res.data) {
         yield put(todolistData(res.data))
         yield put(setSizeData(res.data.length))
@@ -72,7 +74,7 @@ function* findSaga({ payload }: any): any {
     const { search, role, page, pagesizes } = payload
     let pages = page ? page * 1 : 1
     let pagesize = pagesizes ? pagesizes : 5
-    const res = yield call(getApi, { path: 'users', search, role: role == 'All' ? null : role, pages, pagesize, relation: 'company' })
+    const res = yield call(getApi, { path: 'users', filter: {include: ['company'], limit: `${(pagesize)}`,skip: `${(pages-1)*pagesize}`, where: { username: {like: search}, role: role} } })
     if (res.data) {
         yield put(setSizeData(res.data.length))
         yield put(todolistData(res.data))
@@ -124,7 +126,7 @@ function* registerSaga({ payload }: any): any {
 function* deleteSaga({ payload }: any): any {
     yield put(setLoading(true))
     const { _ID } = payload
-    const res = yield call(deleteApi, { path: 'users', id: _ID })
+    const res = yield call(deleteApi, { path: 'users', documentId: _ID })
     if (res) {
         yield put(getalltodoRequest(false))
         yield put(setLoading(false))
@@ -133,12 +135,12 @@ function* deleteSaga({ payload }: any): any {
         });
     }
 }
-
+// path: 'users',data: { username, role, birthday, address, companyId: company} , documentId: id
 function* changeSaga({ payload }: any): any {
     yield put(setLoading(true))
 
     const { id, username, role, address, birthday, company } = payload
-    const res = yield call(putApi, { id: id, username, role, birthday, address, companyId: company })
+    const res = yield call(putApi, { path: 'users',data: {id:id, username, role, birthday, address, companyId: company} , documentId: id })
     if (!res.response) {
         yield put(setLoading(false))
         yield put(getalltodoRequest(true))

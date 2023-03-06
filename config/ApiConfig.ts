@@ -1,24 +1,73 @@
 import axiosConfig from '@/config/AxiosConfig';
 
-export const putApi = async (data: any) => {
-    try {
-        return await axiosConfig.put(`/users/${data.id}`, data)
-    } catch (error) {
-        return error
+
+interface UpdateDataProps {
+    path: string,
+    documentId: string,
+    data: any
+}
+
+interface PostDataProps {
+    path: string,
+    data: object
+}
+
+interface DeleteDataProps {
+    path: string,
+    documentId: string,
+}
+
+interface FilterInclude {
+    relation: string,
+    scope?: Array<FilterInclude>
+}
+
+interface GetDataProps {
+    path: string,
+    documentId?: string,
+    filter?: {
+        limit?: string,
+        skip?: string,
+        where?: any,
+        include?: Array<FilterInclude | string>
     }
 }
 
-export const getApi = async (data: any) => {
-    return await axiosConfig.get(`/${data.path}${data.id ? `/${data.id}` : ''}?filter={${data.pagesize ? `"limit":${data.pagesize},"skip":${(data.pages - 1) * data.pagesize},` : ''} ${data.role || data.search ? ` "where": {${data.role ? `"role" : "${data.role}"` : ''}${data.search ? `${data.role ? ',' : ''}"username": {"like":"${data.search}"}` : ''}},` : ''}"include": [{"relation": "${data.relation}"}]}`)
-}
-  
-export const deleteApi = async (data: any) => {
-    return await axiosConfig.delete(`/${data.path}/${data.id}`)
+export const putApi = async (data: UpdateDataProps) => {
+    const url = ['', data.path, data.documentId]?.filter(e => e != undefined).join('/')
+    try {
+        return await axiosConfig.put(url, data.data)
+    } catch (error) {
+        return error
+    }
+
 }
 
-export const postApi = async (data: any) => {
+export const getApi = async (data: GetDataProps) => {
+    const url = ['', data.path, data.documentId]?.filter(e => e != undefined).join('/')
+
+    return await axiosConfig.get(
+        url,
+        {
+            params: { filter: data?.filter },
+
+            paramsSerializer: ({
+                serialize: (params) => {
+                    const aaaa = encodeURIComponent(JSON.stringify(params?.filter))
+                    return `filter=${aaaa}`
+                }  
+            })
+        })
+}
+
+export const deleteApi = async (data: DeleteDataProps) => {
+    const url = ['', data.path, data.documentId]?.filter(e => e != undefined).join('/')
+    return await axiosConfig.delete(url)
+}
+
+export const postApi = async (data: PostDataProps) => {
     try {
-       return  await axiosConfig.post(`/${data.path}`, data.data)
+        return await axiosConfig.post(`/${data.path}`, data.data)
     } catch (error) {
         return error
     }
